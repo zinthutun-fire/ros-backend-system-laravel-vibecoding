@@ -255,7 +255,7 @@ $initialData = json_encode([
                         <h5 class="mb-0 fw-semibold">Process Payment</h5>
                     </div>
                     <p class="small text-muted bg-light rounded p-3 mb-3">
-                        Total due: <strong class="text-dark">${{ number_format($order->grand_total, 2) }}</strong>
+                        Total due: <strong class="text-dark">{{ number_format($order->grand_total, 2) }} Ks</strong>
                     </p>
                     <form method="POST" action="{{ route('cashier.orders.payment') }}">
                         @csrf
@@ -270,12 +270,12 @@ $initialData = json_encode([
                             </select>
                         </div>
                         <div id="cash-fields" class="mb-3">
-                            <label class="form-label small fw-medium">Amount Tendered ($)</label>
+                            <label class="form-label small fw-medium">Amount Tendered (Ks)</label>
                             <input type="number" step="0.01" name="tendered" value="{{ $order->grand_total }}" class="form-control form-control-sm">
                         </div>
                         <div class="d-flex justify-content-end gap-2">
                             <button type="button" @click="showPayment = false" class="btn btn-sm btn-secondary">Cancel</button>
-                            <button type="submit" class="btn btn-sm btn-success">Pay ${{ number_format($order->grand_total, 2) }}</button>
+                            <button type="submit" class="btn btn-sm btn-success">Pay {{ number_format($order->grand_total, 2) }} Ks</button>
                         </div>
                     </form>
                 </div>
@@ -295,7 +295,7 @@ $initialData = json_encode([
                         <h5 class="mb-0 fw-semibold">Split Payment</h5>
                     </div>
                     <p class="small text-muted bg-light rounded p-3 mb-3">
-                        Total due: <strong class="text-dark">${{ number_format($order->grand_total, 2) }}</strong>
+                        Total due: <strong class="text-dark">{{ number_format($order->grand_total, 2) }} Ks</strong>
                     </p>
                     <form method="POST" action="{{ route('cashier.orders.split') }}">
                         @csrf
@@ -349,7 +349,7 @@ $initialData = json_encode([
                         <h5 class="mb-0 fw-semibold">Apply Discount</h5>
                     </div>
                     <p class="small text-muted bg-light rounded p-3 mb-3">
-                        Subtotal: <strong class="text-dark">${{ number_format($order->total, 2) }}</strong>
+                        Subtotal: <strong class="text-dark">{{ number_format($order->total, 2) }} Ks</strong>
                     </p>
                     <form method="POST" action="{{ route('cashier.orders.discount') }}">
                         @csrf
@@ -357,7 +357,7 @@ $initialData = json_encode([
                         <div class="mb-3">
                             <label class="form-label small fw-medium">Type</label>
                             <select name="discount_type" class="form-select form-select-sm">
-                                <option value="fixed">Fixed ($)</option>
+                                <option value="fixed">Fixed (Ks)</option>
                                 <option value="percentage">Percentage (%)</option>
                             </select>
                         </div>

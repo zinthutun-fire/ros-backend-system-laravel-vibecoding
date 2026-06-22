@@ -41,7 +41,7 @@
                         @if($item->status === 'voided')<br><small class="text-danger">(Voided)</small>@endif
                     </td>
                     <td class="text-center border-0">{{ $item->qty }}</td>
-                    <td class="text-end pe-0 border-0">${{ number_format($item->subtotal, 2) }}</td>
+                    <td class="text-end pe-0 border-0">{{ number_format($item->subtotal, 2) }} Ks</td>
                 </tr>
                 @endforeach
             </tbody>
@@ -49,14 +49,14 @@
 
         <hr style="border-top:2px dashed #dee2e6;">
         <div class="small d-flex flex-column gap-1">
-            <div class="d-flex justify-content-between"><span class="text-muted">Subtotal</span><span>${{ number_format($order->total, 2) }}</span></div>
-            <div class="d-flex justify-content-between"><span class="text-muted">Tax</span><span>${{ number_format($order->tax_total, 2) }}</span></div>
-            <div class="d-flex justify-content-between"><span class="text-muted">Service Charge</span><span>${{ number_format($order->service_charge_total, 2) }}</span></div>
+            <div class="d-flex justify-content-between"><span class="text-muted">Subtotal</span><span>{{ number_format($order->total, 2) }} Ks</span></div>
+            <div class="d-flex justify-content-between"><span class="text-muted">Tax</span><span>{{ number_format($order->tax_total, 2) }} Ks</span></div>
+            <div class="d-flex justify-content-between"><span class="text-muted">Service Charge</span><span>{{ number_format($order->service_charge_total, 2) }} Ks</span></div>
             @if((float)$order->discount_total > 0)
-            <div class="d-flex justify-content-between text-danger"><span>Discount</span><span>-${{ number_format($order->discount_total, 2) }}</span></div>
+            <div class="d-flex justify-content-between text-danger"><span>Discount</span><span>{{ number_format($order->discount_total, 2) }} Ks</span></div>
             @endif
             <hr style="border-top:2px dashed #dee2e6;">
-            <div class="d-flex justify-content-between fw-bold fs-6"><span>Total</span><span>${{ number_format($order->grand_total, 2) }}</span></div>
+            <div class="d-flex justify-content-between fw-bold fs-6"><span>Total</span><span>{{ number_format($order->grand_total, 2) }} Ks</span></div>
         </div>
 
         @if($order->payments->count() > 0)
@@ -64,7 +64,7 @@
         <div class="small">
             <p class="fw-medium mb-1">Payment{{ $order->payments->count() > 1 ? 's' : '' }}:</p>
             @foreach($order->payments as $payment)
-            <div class="d-flex justify-content-between"><span class="text-muted capitalize">{{ $payment->type }}</span><span>${{ number_format($payment->amount, 2) }}</span></div>
+            <div class="d-flex justify-content-between"><span class="text-muted capitalize">{{ $payment->type }}</span><span>{{ number_format($payment->amount, 2) }} Ks</span></div>
             @endforeach
         </div>
         @endif

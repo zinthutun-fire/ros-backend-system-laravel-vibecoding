@@ -26,7 +26,7 @@
     <div class="stat-grid">
         <div class="stat-box">
             <div class="label">Total Sales</div>
-            <div class="value">${{ number_format($report['total_sales'], 2) }}</div>
+            <div class="value">{{ number_format($report['total_sales'], 2) }} Ks</div>
         </div>
         <div class="stat-box">
             <div class="label">Orders</div>
@@ -34,11 +34,11 @@
         </div>
         <div class="stat-box">
             <div class="label">Cash</div>
-            <div class="value">${{ number_format($cashTotal, 2) }}</div>
+            <div class="value">{{ number_format($cashTotal, 2) }} Ks</div>
         </div>
         <div class="stat-box">
             <div class="label">Card</div>
-            <div class="value">${{ number_format($cardTotal, 2) }}</div>
+            <div class="value">{{ number_format($cardTotal, 2) }} Ks</div>
         </div>
     </div>
 
@@ -52,7 +52,7 @@
             <tr>
                 <td>Day {{ $day }}</td>
                 <td>{{ \DateTime::createFromFormat('Y-m-d', sprintf('%s-%02d-%02d', $year, $month, (int)$day))->format('M d, Y') }}</td>
-                <td>${{ number_format($amount, 2) }}</td>
+                <td>{{ number_format($amount, 2) }} Ks</td>
             </tr>
             @endif
             @endforeach

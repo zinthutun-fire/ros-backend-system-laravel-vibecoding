@@ -68,7 +68,7 @@ $initialData = json_encode([
                         </div>
                         <div>
                             <small class="text-muted text-uppercase fw-semibold d-block" style="font-size:0.7rem;">Today's Revenue</small>
-                            <span class="fs-4 fw-bold" x-text="'$' + stats.todayRevenue.toFixed(2)">${{ number_format($todayRevenue, 2) }}</span>
+                            <span class="fs-4 fw-bold" x-text="stats.todayRevenue.toFixed(2) + ' Ks'">{{ number_format($todayRevenue, 2) }} Ks</span>
                         </div>
                     </div>
                 </div>

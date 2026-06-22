@@ -29,14 +29,21 @@
 
 <div class="bg-white rounded-xl shadow-sm overflow-hidden">
     <table class="w-full text-sm">
-        <thead class="bg-gray-50"><tr class="text-left text-gray-500"><th class="px-4 py-3">Name</th><th class="px-4 py-3">Category</th><th class="px-4 py-3">Kitchen</th><th class="px-4 py-3">Price</th><th class="px-4 py-3">Status</th><th class="px-4 py-3">Modifiers</th><th class="px-4 py-3">Actions</th></tr></thead>
+        <thead class="bg-gray-50"><tr class="text-left text-gray-500"><th class="px-4 py-3">Image</th><th class="px-4 py-3">Name</th><th class="px-4 py-3">Category</th><th class="px-4 py-3">Kitchen</th><th class="px-4 py-3">Price</th><th class="px-4 py-3">Status</th><th class="px-4 py-3">Modifiers</th><th class="px-4 py-3">Actions</th></tr></thead>
         <tbody>
             @forelse($menuItems as $item)
             <tr class="border-t">
+                <td class="px-4 py-3">
+                    @if($item->image)
+                        <img src="{{ asset('storage/' . $item->image) }}" alt="{{ $item->name }}" class="w-12 h-12 object-cover rounded-lg">
+                    @else
+                        <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div>
+                    @endif
+                </td>
                 <td class="px-4 py-3 font-medium">{{ $item->name }}</td>
                 <td class="px-4 py-3">{{ $item->category->name }}</td>
                 <td class="px-4 py-3">{{ $item->kitchen->code }}</td>
-                <td class="px-4 py-3">${{ number_format($item->price, 2) }}</td>
+                <td class="px-4 py-3">{{ number_format($item->price, 2) }} Ks</td>
                 <td class="px-4 py-3"><span class="px-2 py-0.5 rounded-full text-xs {{ $item->status === 'available' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">{{ $item->status }}</span></td>
                 <td class="px-4 py-3">
                     @if($item->has_modifiers && $item->activeModifiers->count() > 0)
@@ -46,7 +53,7 @@
                     @endif
                 </td>
                 <td class="px-4 py-3 space-x-2">
-                    <button @click="$dispatch('open-modal', {mode: 'edit', id: {{ $item->id }}, name: '{{ $item->name }}', category_id: {{ $item->category_id }}, kitchen_id: {{ $item->kitchen_id }}, price: {{ $item->price }}, description: '{{ $item->description ?? '' }}', has_modifiers: {{ $item->has_modifiers ? 'true' : 'false' }}, status: '{{ $item->status }}'})" class="text-blue-600 hover:text-blue-800 text-xs">Edit</button>
+                    <button @click="$dispatch('open-modal', {mode: 'edit', id: {{ $item->id }}, name: '{{ $item->name }}', category_id: {{ $item->category_id }}, kitchen_id: {{ $item->kitchen_id }}, price: {{ $item->price }}, image: '{{ $item->image ?? '' }}', description: '{{ $item->description ?? '' }}', has_modifiers: {{ $item->has_modifiers ? 'true' : 'false' }}, status: '{{ $item->status }}'})" class="text-blue-600 hover:text-blue-800 text-xs">Edit</button>
                     @php
                         $modifiersData = $item->activeModifiers->map(fn($m) => [
                             'id' => $m->id,
@@ -60,19 +67,19 @@
                 </td>
             </tr>
             @empty
-            <tr><td colspan="7" class="px-4 py-8 text-center text-gray-400">No menu items found</td></tr>
+            <tr><td colspan="8" class="px-4 py-8 text-center text-gray-400">No menu items found</td></tr>
             @endforelse
         </tbody>
     </table>
 </div>
 
 {{-- Menu Item Create/Edit Modal --}}
-<div x-data="{ open: false, mode: 'create', form: { name: '', category_id: '', kitchen_id: '', price: '', description: '', has_modifiers: false, status: 'available' } }" x-cloak
-     @open-modal.window="open = true; mode = $event.detail.mode; if(mode=='edit') { form = $event.detail; form.id = $event.detail.id; } else { form = { name: '', category_id: '', kitchen_id: '', price: '', description: '', has_modifiers: false, status: 'available' } }"
+<div x-data="{ open: false, mode: 'create', form: { name: '', category_id: '', kitchen_id: '', price: '', image: '', description: '', has_modifiers: false, status: 'available' }, imagePreview: null }" x-cloak
+     @open-modal.window="open = true; mode = $event.detail.mode; if(mode=='edit') { form = $event.detail; form.id = $event.detail.id; imagePreview = form.image ? '{{ asset('storage') }}/' + form.image : null; } else { form = { name: '', category_id: '', kitchen_id: '', price: '', image: '', description: '', has_modifiers: false, status: 'available' }; imagePreview = null; }"
      x-show="open" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" @click.away="open = false">
     <div class="bg-white rounded-xl p-6 w-full max-w-lg">
         <h3 class="text-lg font-semibold mb-4" x-text="mode === 'create' ? 'Add Menu Item' : 'Edit Menu Item'"></h3>
-        <form :action="mode === 'create' ? '{{ route('admin.menu-items.store') }}' : '{{ route('admin.menu-items.update', '_id_') }}'.replace('_id_', form.id)" method="POST">
+        <form :action="mode === 'create' ? '{{ route('admin.menu-items.store') }}' : '{{ route('admin.menu-items.update', '_id_') }}'.replace('_id_', form.id)" method="POST" enctype="multipart/form-data">
             @csrf <input type="hidden" name="_method" :value="mode === 'edit' ? 'PUT' : 'POST'">
             <div class="grid grid-cols-2 gap-4">
                 <div class="col-span-2"><label class="block text-sm font-medium text-gray-700">Name</label><input type="text" name="name" x-model="form.name" required class="w-full px-3 py-2 border rounded-lg text-sm"></div>
@@ -86,11 +93,18 @@
                         @foreach($kitchens as $k)<option value="{{ $k->id }}">{{ $k->name }}</option>@endforeach
                     </select>
                 </div>
-                <div><label class="block text-sm font-medium text-gray-700">Price ($)</label><input type="number" step="0.01" name="price" x-model="form.price" required class="w-full px-3 py-2 border rounded-lg text-sm"></div>
+                <div><label class="block text-sm font-medium text-gray-700">Price (Ks)</label><input type="number" step="0.01" name="price" x-model="form.price" required class="w-full px-3 py-2 border rounded-lg text-sm"></div>
                 <div><label class="block text-sm font-medium text-gray-700">Status</label>
                     <select name="status" x-model="form.status" class="w-full px-3 py-2 border rounded-lg text-sm"><option value="available">Available</option><option value="unavailable">Unavailable</option></select>
                 </div>
                 <div class="col-span-2"><label class="block text-sm font-medium text-gray-700">Description</label><textarea name="description" x-model="form.description" class="w-full px-3 py-2 border rounded-lg text-sm"></textarea></div>
+                <div class="col-span-2">
+                    <label class="block text-sm font-medium text-gray-700">Image</label>
+                    <input type="file" name="image" accept="image/jpeg,image/png,image/jpg,image/gif,image/webp" @change="const f = $event.target.files[0]; if(f) { const reader = new FileReader(); reader.onload = e => imagePreview = e.target.result; reader.readAsDataURL(f); }" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                    <template x-if="imagePreview">
+                        <div class="mt-2"><img :src="imagePreview" class="w-20 h-20 object-cover rounded-lg border"></div>
+                    </template>
+                </div>
                 <div class="col-span-2 flex items-center gap-2">
                     <input type="hidden" name="has_modifiers" value="0">
                     <input type="checkbox" name="has_modifiers" value="1" x-model="form.has_modifiers" id="has_modifiers" class="rounded border-gray-300">
@@ -123,7 +137,7 @@
                         <div class="flex items-center justify-between bg-gray-50 rounded-lg px-3 py-2 text-sm">
                             <div class="flex items-center gap-3">
                                 <span x-text="mod.name" class="font-medium"></span>
-                                <span x-text="'$' + parseFloat(mod.price_adjustment).toFixed(2)" class="text-gray-500"></span>
+                                <span x-text="parseFloat(mod.price_adjustment).toFixed(2) + ' Ks'" class="text-gray-500"></span>
                             </div>
                             <div class="flex items-center gap-2">
                                 <button @click='$dispatch("open-edit-modifier", {id: mod.id, name: mod.name, price_adjustment: mod.price_adjustment, is_active: mod.is_active, menu_item_id: item_id})'
@@ -172,7 +186,7 @@
             @csrf @method('PUT')
             <div class="space-y-4">
                 <div><label class="block text-sm font-medium text-gray-700">Name</label><input type="text" name="name" x-model="form.name" required class="w-full px-3 py-2 border rounded-lg text-sm"></div>
-                <div><label class="block text-sm font-medium text-gray-700">Price Adjustment ($)</label><input type="number" step="0.01" name="price_adjustment" x-model="form.price_adjustment" class="w-full px-3 py-2 border rounded-lg text-sm"></div>
+                <div><label class="block text-sm font-medium text-gray-700">Price Adjustment (Ks)</label><input type="number" step="0.01" name="price_adjustment" x-model="form.price_adjustment" class="w-full px-3 py-2 border rounded-lg text-sm"></div>
                 <div class="flex items-center gap-2">
                     <input type="hidden" name="is_active" value="0">
                     <input type="checkbox" name="is_active" value="1" x-model="form.is_active" id="is_active_edit" class="rounded border-gray-300">

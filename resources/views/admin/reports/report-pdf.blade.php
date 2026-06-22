@@ -19,16 +19,16 @@ th { background: #f5f5f5; font-weight: 600; }
 <p class="sub">{{ $from }} → {{ $to }}</p>
 
 <table class="summary">
-    <tr><td>Total Sales</td><td>${{ number_format($totalSales, 2) }}</td></tr>
+    <tr><td>Total Sales</td><td>{{ number_format($totalSales, 2) }} Ks</td></tr>
     <tr><td>Order Count</td><td>{{ $orderCount }}</td></tr>
-    <tr><td>Avg Order Value</td><td>${{ number_format($avgOrderValue, 2) }}</td></tr>
+    <tr><td>Avg Order Value</td><td>{{ number_format($avgOrderValue, 2) }} Ks</td></tr>
 </table>
 
 <h3>Payment Methods</h3>
 <table>
     <tr><th>Method</th><th class="text-right">Total</th></tr>
     @foreach($paymentMethods as $pm)
-        <tr><td>{{ $pm->method }}</td><td class="text-right">${{ number_format((float) $pm->total, 2) }}</td></tr>
+        <tr><td>{{ $pm->method }}</td><td class="text-right">{{ number_format((float) $pm->total, 2) }} Ks</td></tr>
     @endforeach
 </table>
 
@@ -39,7 +39,7 @@ th { background: #f5f5f5; font-weight: 600; }
         <tr>
             <td>{{ $item['menu_item']['name'] ?? 'N/A' }}</td>
             <td class="text-right">{{ $item['total_qty'] ?? 0 }}</td>
-            <td class="text-right">${{ number_format($item['total_revenue'] ?? 0, 2) }}</td>
+            <td class="text-right">{{ number_format($item['total_revenue'] ?? 0, 2) }} Ks</td>
         </tr>
     @empty
         <tr><td colspan="3" style="text-align:center;color:#999;">No data</td></tr>

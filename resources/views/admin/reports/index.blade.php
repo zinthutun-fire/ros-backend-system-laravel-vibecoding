@@ -25,7 +25,7 @@
 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
     <div class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-green-500">
         <p class="text-sm text-gray-500">Total Sales</p>
-        <p class="text-2xl font-bold">${{ number_format($totalSales, 2) }}</p>
+        <p class="text-2xl font-bold">{{ number_format($totalSales, 2) }} Ks</p>
     </div>
     <div class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-blue-500">
         <p class="text-sm text-gray-500">Order Count</p>
@@ -33,7 +33,7 @@
     </div>
     <div class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-purple-500">
         <p class="text-sm text-gray-500">Avg Order Value</p>
-        <p class="text-2xl font-bold">${{ number_format($avgOrderValue, 2) }}</p>
+        <p class="text-2xl font-bold">{{ number_format($avgOrderValue, 2) }} Ks</p>
     </div>
     <div class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-orange-500">
         <p class="text-sm text-gray-500">Items Sold</p>
@@ -70,7 +70,7 @@
             <tr class="border-b border-gray-100">
                 <td class="py-2 font-medium">{{ $item['menu_item']['name'] ?? 'N/A' }}</td>
                 <td class="py-2">{{ $item['total_qty'] ?? 0 }}</td>
-                <td class="py-2">${{ number_format($item['total_revenue'] ?? 0, 2) }}</td>
+                <td class="py-2">{{ number_format($item['total_revenue'] ?? 0, 2) }} Ks</td>
             </tr>
             @empty
             <tr><td colspan="3" class="py-4 text-center text-gray-400">No data</td></tr>

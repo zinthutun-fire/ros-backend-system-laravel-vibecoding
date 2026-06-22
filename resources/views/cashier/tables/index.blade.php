@@ -75,7 +75,7 @@
                         <span class="badge bg-primary mt-2" style="font-size:0.6rem;">Click to Close</span>
                     </template>
                     <template x-if="table.status === 'occupied' || table.status === 'payment'">
-                        <div class="small fw-bold text-dark mt-2" x-text="table.current_order_price ? '$' + table.current_order_price.toFixed(2) : ''"></div>
+                        <div class="small fw-bold text-dark mt-2" x-text="table.current_order_price ? table.current_order_price.toFixed(2) + ' Ks' : ''"></div>
                     </template>
                 </button>
             </div>

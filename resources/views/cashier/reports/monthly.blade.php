@@ -39,7 +39,7 @@
             <div class="card border-0 shadow-sm stat-card border-start border-success border-4 h-100">
                 <div class="card-body">
                     <small class="text-muted text-uppercase fw-semibold d-block" style="font-size:0.7rem;">Total Sales</small>
-                    <span class="fs-4 fw-bold">${{ number_format($report['total_sales'], 2) }}</span>
+                    <span class="fs-4 fw-bold">{{ number_format($report['total_sales'], 2) }} Ks</span>
                 </div>
             </div>
         </div>
@@ -55,7 +55,7 @@
             <div class="card border-0 shadow-sm stat-card border-start border-warning border-4 h-100">
                 <div class="card-body">
                     <small class="text-muted text-uppercase fw-semibold d-block" style="font-size:0.7rem;">Cash Sales</small>
-                    <span class="fs-4 fw-bold">${{ number_format($cashTotal, 2) }}</span>
+                    <span class="fs-4 fw-bold">{{ number_format($cashTotal, 2) }} Ks</span>
                 </div>
             </div>
         </div>
@@ -63,7 +63,7 @@
             <div class="card border-0 shadow-sm stat-card border-start border-danger border-4 h-100">
                 <div class="card-body">
                     <small class="text-muted text-uppercase fw-semibold d-block" style="font-size:0.7rem;">Card Sales</small>
-                    <span class="fs-4 fw-bold">${{ number_format($cardTotal, 2) }}</span>
+                    <span class="fs-4 fw-bold">{{ number_format($cardTotal, 2) }} Ks</span>
                 </div>
             </div>
         </div>
@@ -101,7 +101,7 @@
                     <tr class="{{ $amount > 0 ? '' : 'text-muted' }}">
                         <td class="ps-3 fw-medium">Day {{ $day }}</td>
                         <td>{{ DateTime::createFromFormat('Y-m-d', sprintf('%s-%02d-%02d', $year, $month, (int)$day))->format('M d, Y') }}</td>
-                        <td>${{ number_format($amount, 2) }}</td>
+                        <td>{{ number_format($amount, 2) }} Ks</td>
                     </tr>
                     @endforeach
                 </tbody>
@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded', function () {
         data: {
             labels: {!! json_encode($chartLabels) !!},
             datasets: [{
-                label: 'Daily Sales ($)',
+                label: 'Daily Sales (Ks)',
                 data: {!! json_encode($chartData) !!},
                 backgroundColor: 'rgba(13, 110, 253, 0.7)',
                 borderColor: 'rgba(13, 110, 253, 1)',
@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 y: {
                     beginAtZero: true,
                     ticks: {
-                        callback: function(value) { return '$' + value.toFixed(2); }
+                        callback: function(value) { return value.toFixed(2) + ' Ks'; }
                     }
                 },
                 x: {

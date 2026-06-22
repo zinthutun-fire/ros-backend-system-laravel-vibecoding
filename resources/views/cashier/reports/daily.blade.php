@@ -27,7 +27,7 @@
             <div class="card border-0 shadow-sm stat-card border-start border-success border-4 h-100">
                 <div class="card-body">
                     <small class="text-muted text-uppercase fw-semibold d-block" style="font-size:0.7rem;">Total Sales</small>
-                    <span class="fs-4 fw-bold">${{ number_format($report['total_sales'], 2) }}</span>
+                    <span class="fs-4 fw-bold">{{ number_format($report['total_sales'], 2) }} Ks</span>
                 </div>
             </div>
         </div>
@@ -68,16 +68,16 @@
                     <div class="d-flex flex-column gap-2">
                         <div class="d-flex justify-content-between align-items-center p-3 bg-success bg-opacity-10 rounded-3">
                             <span class="fw-medium small">Cash Sales</span>
-                            <span class="fw-bold">${{ number_format($report['cash_sales'], 2) }}</span>
+                            <span class="fw-bold">{{ number_format($report['cash_sales'], 2) }} Ks</span>
                         </div>
                         <div class="d-flex justify-content-between align-items-center p-3 bg-info bg-opacity-10 rounded-3">
                             <span class="fw-medium small">Card Sales</span>
-                            <span class="fw-bold">${{ number_format($report['card_sales'], 2) }}</span>
+                            <span class="fw-bold">{{ number_format($report['card_sales'], 2) }} Ks</span>
                         </div>
                         <hr class="my-1">
                         <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded-3">
                             <span class="fw-semibold small">Total</span>
-                            <span class="fw-bold fs-6">${{ number_format($report['total_sales'], 2) }}</span>
+                            <span class="fw-bold fs-6">{{ number_format($report['total_sales'], 2) }} Ks</span>
                         </div>
                     </div>
                 </div>
@@ -129,7 +129,7 @@
                     <tr>
                         <td class="ps-3 fw-medium">{{ $item['menu_item']['name'] ?? 'Item #' . $item['menu_item_id'] }}</td>
                         <td>{{ $item['total_qty'] }}</td>
-                        <td>${{ number_format($item['total_revenue'], 2) }}</td>
+                        <td>{{ number_format($item['total_revenue'], 2) }} Ks</td>
                     </tr>
                     @endforeach
                 </tbody>
@@ -158,7 +158,7 @@
                     <tr>
                         <td class="ps-3 fw-medium">{{ $payment->order->order_no ?? '—' }}</td>
                         <td class="text-capitalize">{{ $payment->type }}</td>
-                        <td>${{ number_format($payment->amount, 2) }}</td>
+                        <td>{{ number_format($payment->amount, 2) }} Ks</td>
                         <td class="text-muted">{{ $payment->paid_at->format('H:i') }}</td>
                     </tr>
                     @empty

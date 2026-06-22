@@ -25,7 +25,7 @@
     <div class="stat-grid">
         <div class="stat-box">
             <div class="label">Total Sales</div>
-            <div class="value">${{ number_format($report['total_sales'], 2) }}</div>
+            <div class="value">{{ number_format($report['total_sales'], 2) }} Ks</div>
         </div>
         <div class="stat-box">
             <div class="label">Orders</div>
@@ -33,11 +33,11 @@
         </div>
         <div class="stat-box">
             <div class="label">Cash</div>
-            <div class="value">${{ number_format($report['cash_sales'], 2) }}</div>
+            <div class="value">{{ number_format($report['cash_sales'], 2) }} Ks</div>
         </div>
         <div class="stat-box">
             <div class="label">Card</div>
-            <div class="value">${{ number_format($report['card_sales'], 2) }}</div>
+            <div class="value">{{ number_format($report['card_sales'], 2) }} Ks</div>
         </div>
     </div>
 
@@ -51,7 +51,7 @@
             <tr>
                 <td>{{ $payment->order->order_no ?? '—' }}</td>
                 <td>{{ ucfirst($payment->type) }}</td>
-                <td>${{ number_format($payment->amount, 2) }}</td>
+                <td>{{ number_format($payment->amount, 2) }} Ks</td>
                 <td>{{ $payment->paid_at->format('H:i') }}</td>
             </tr>
             @empty
@@ -79,7 +79,7 @@
             <tr>
                 <td>{{ $item['menu_item']['name'] ?? 'Item #' . $item['menu_item_id'] }}</td>
                 <td>{{ $item['total_qty'] }}</td>
-                <td>${{ number_format($item['total_revenue'], 2) }}</td>
+                <td>{{ number_format($item['total_revenue'], 2) }} Ks</td>
             </tr>
             @endforeach
         </tbody>

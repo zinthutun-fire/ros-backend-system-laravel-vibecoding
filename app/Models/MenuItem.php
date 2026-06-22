@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class MenuItem extends Model
 {
@@ -45,6 +46,11 @@ class MenuItem extends Model
     public function activeModifiers()
     {
         return $this->hasMany(MenuItemModifier::class)->where('is_active', true);
+    }
+
+    public function getImageUrlAttribute(): ?string
+    {
+        return $this->image ? Storage::url($this->image) : null;
     }
 
     public function orderItems()

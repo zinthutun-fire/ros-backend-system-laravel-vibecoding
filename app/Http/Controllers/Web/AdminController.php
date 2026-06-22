@@ -18,6 +18,7 @@ use App\Services\ReportService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
@@ -259,7 +260,11 @@ class AdminController extends Controller
             'description' => 'nullable|string',
             'has_modifiers' => 'sometimes|boolean',
             'status' => 'sometimes|in:available,unavailable',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
+        if ($request->hasFile('image')) {
+            $data['image'] = $request->file('image')->store('menu-items', 'public');
+        }
         MenuItem::create($data);
         return redirect()->route('admin.menu-items')->with('success', 'Menu item created successfully');
     }
@@ -275,7 +280,14 @@ class AdminController extends Controller
             'description' => 'nullable|string',
             'has_modifiers' => 'sometimes|boolean',
             'status' => 'sometimes|in:available,unavailable',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
+        if ($request->hasFile('image')) {
+            if ($item->image) {
+                Storage::disk('public')->delete($item->image);
+            }
+            $data['image'] = $request->file('image')->store('menu-items', 'public');
+        }
         $item->update($data);
         return redirect()->route('admin.menu-items')->with('success', 'Menu item updated successfully');
     }
