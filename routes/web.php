@@ -52,6 +52,7 @@ Route::middleware(['auth', 'role:admin,manager'])->prefix('admin')->name('admin.
     Route::put('/menu-items/{id}', [AdminController::class, 'updateMenuItem'])->name('menu-items.update');
     Route::delete('/menu-items/{id}', [AdminController::class, 'deleteMenuItem'])->name('menu-items.delete');
     Route::post('/menu-items/modifiers', [AdminController::class, 'storeModifier'])->name('menu-items.modifiers.store');
+    Route::put('/menu-items/modifiers/{id}', [AdminController::class, 'updateModifier'])->name('menu-items.modifiers.update');
     Route::delete('/menu-items/modifiers/{id}', [AdminController::class, 'deleteModifier'])->name('menu-items.modifiers.delete');
 
     Route::get('/users', [AdminController::class, 'users'])->name('users');
@@ -69,6 +70,8 @@ Route::middleware(['auth', 'role:admin,manager'])->prefix('admin')->name('admin.
     Route::put('/orders/{id}/cancel', [AdminController::class, 'cancelOrder'])->name('orders.cancel');
 
     Route::get('/reports', [AdminController::class, 'reports'])->name('reports');
+    Route::get('/reports/csv', [AdminController::class, 'reportsCsv'])->name('reports.csv');
+    Route::get('/reports/pdf', [AdminController::class, 'reportsPdf'])->name('reports.pdf');
 });
 
 Route::middleware(['auth', 'role:cashier,waiter'])->prefix('cashier')->name('cashier.')->group(function () {

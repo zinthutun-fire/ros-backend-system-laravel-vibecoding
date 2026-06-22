@@ -6,11 +6,26 @@
     <button @click="$dispatch('open-modal', {mode: 'create'})" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-indigo-700">+ Add Table</button>
 </div>
 @if(session('success'))<div class="bg-green-50 text-green-700 px-4 py-3 rounded-lg mb-4 text-sm">{{ session('success') }}</div>@endif
+
+<form method="GET" class="flex items-center gap-3 mb-4">
+    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by table no..." class="px-3 py-2 border rounded-lg text-sm w-64">
+    <select name="area_id" class="px-3 py-2 border rounded-lg text-sm">
+        <option value="">All Areas</option>
+        @foreach($areas as $area)
+            <option value="{{ $area->id }}" {{ request('area_id') == $area->id ? 'selected' : '' }}>{{ $area->name }}</option>
+        @endforeach
+    </select>
+    <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm hover:bg-indigo-700">Filter</button>
+    @if(request('search') || request('area_id'))
+        <a href="{{ route('admin.tables') }}" class="px-4 py-2 border rounded-lg text-sm hover:bg-gray-50">Clear</a>
+    @endif
+</form>
+
 <div class="bg-white rounded-xl shadow-sm overflow-hidden">
     <table class="w-full text-sm">
         <thead class="bg-gray-50"><tr class="text-left text-gray-500"><th class="px-4 py-3">#</th><th class="px-4 py-3">Table No</th><th class="px-4 py-3">Name</th><th class="px-4 py-3">Area</th><th class="px-4 py-3">Capacity</th><th class="px-4 py-3">Status</th><th class="px-4 py-3">Actions</th></tr></thead>
         <tbody>
-            @foreach($tables as $table)
+            @forelse($tables as $table)
             <tr class="border-t">
                 <td class="px-4 py-3">{{ $table->sort_order }}</td>
                 <td class="px-4 py-3 font-medium">{{ $table->table_no }}</td>
@@ -26,7 +41,9 @@
                     </form>
                 </td>
             </tr>
-            @endforeach
+            @empty
+            <tr><td colspan="7" class="px-4 py-8 text-center text-gray-400">No tables found</td></tr>
+            @endforelse
         </tbody>
     </table>
 </div>

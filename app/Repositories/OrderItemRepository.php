@@ -41,7 +41,20 @@ class OrderItemRepository implements OrderItemRepositoryInterface
 
     public function create(array $data)
     {
-        return OrderItem::create($data);
+        $modifiers = $data['modifiers'] ?? [];
+        unset($data['modifiers']);
+
+        $item = OrderItem::create($data);
+
+        foreach ($modifiers as $modData) {
+            $item->modifiers()->create([
+                'modifier_id' => $modData['modifier_id'] ?? null,
+                'name' => $modData['name'],
+                'price_adjustment' => $modData['price_adjustment'] ?? 0,
+            ]);
+        }
+
+        return $item->load('modifiers');
     }
 
     public function createMany(array $items)

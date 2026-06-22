@@ -12,10 +12,10 @@ use App\Models\OrderItem;
 use App\Models\Payment;
 use App\Models\Table;
 use App\Models\TableArea;
-use App\Models\TableTransfer;
 use App\Models\TaxRate;
 use App\Models\User;
 use App\Services\ReportService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -70,7 +70,17 @@ class AdminController extends Controller
     // === TABLES ===
     public function tables()
     {
-        $tables = Table::with('area')->orderBy('sort_order')->get();
+        $query = Table::with('area');
+
+        if ($search = request('search')) {
+            $query->where('table_no', 'like', "%{$search}%");
+        }
+
+        if ($areaId = request('area_id')) {
+            $query->where('area_id', $areaId);
+        }
+
+        $tables = $query->orderBy('sort_order')->get();
         $areas = TableArea::orderBy('sort_order')->get();
         return view('admin.tables.index', compact('tables', 'areas'));
     }
@@ -219,7 +229,21 @@ class AdminController extends Controller
     // === MENU ITEMS ===
     public function menuItems()
     {
-        $menuItems = MenuItem::with(['category', 'kitchen', 'activeModifiers'])->ordered()->get();
+        $query = MenuItem::with(['category', 'kitchen', 'activeModifiers']);
+
+        if ($search = request('search')) {
+            $query->where('name', 'like', "%{$search}%");
+        }
+
+        if ($categoryId = request('category_id')) {
+            $query->where('category_id', $categoryId);
+        }
+
+        if ($kitchenId = request('kitchen_id')) {
+            $query->where('kitchen_id', $kitchenId);
+        }
+
+        $menuItems = $query->ordered()->get();
         $categories = Category::active()->ordered()->get();
         $kitchens = Kitchen::active()->get();
         return view('admin.menu-items.index', compact('menuItems', 'categories', 'kitchens'));
@@ -271,19 +295,48 @@ class AdminController extends Controller
             'sort_order' => 'sometimes|integer|min:0',
         ]);
         MenuItemModifier::create($data);
+        MenuItem::where('id', $data['menu_item_id'])->where('has_modifiers', false)->update(['has_modifiers' => true]);
         return redirect()->route('admin.menu-items')->with('success', 'Modifier added successfully');
+    }
+
+    public function updateModifier(Request $request, $id)
+    {
+        $modifier = MenuItemModifier::findOrFail($id);
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'price_adjustment' => 'sometimes|numeric|min:0',
+            'sort_order' => 'sometimes|integer|min:0',
+            'is_active' => 'sometimes|boolean',
+        ]);
+        $modifier->update($data);
+        return redirect()->route('admin.menu-items')->with('success', 'Modifier updated successfully');
     }
 
     public function deleteModifier($id)
     {
-        MenuItemModifier::findOrFail($id)->delete();
+        $modifier = MenuItemModifier::findOrFail($id);
+        $menuItemId = $modifier->menu_item_id;
+        $modifier->delete();
+        if (MenuItemModifier::where('menu_item_id', $menuItemId)->count() === 0) {
+            MenuItem::where('id', $menuItemId)->update(['has_modifiers' => false]);
+        }
         return redirect()->route('admin.menu-items')->with('success', 'Modifier deleted successfully');
     }
 
     // === USERS ===
     public function users()
     {
-        $users = User::with('kitchen')->orderBy('name')->get();
+        $query = User::with('kitchen');
+
+        if ($search = request('search')) {
+            $query->where('name', 'like', "%{$search}%");
+        }
+
+        if ($role = request('role')) {
+            $query->where('role', $role);
+        }
+
+        $users = $query->orderBy('name')->get();
         $kitchens = Kitchen::active()->get();
         return view('admin.users.index', compact('users', 'kitchens'));
     }
@@ -375,6 +428,10 @@ class AdminController extends Controller
         $query = Order::with(['table', 'createdBy', 'payments'])
             ->withCount('items');
 
+        if ($search = request('search')) {
+            $query->where('order_no', 'like', "%{$search}%");
+        }
+
         if ($status = request('status')) {
             $query->byStatus($status);
         }
@@ -387,6 +444,10 @@ class AdminController extends Controller
     {
         $query = Order::with(['table', 'createdBy', 'payments'])
             ->withCount('items');
+
+        if ($search = request('search')) {
+            $query->where('order_no', 'like', "%{$search}%");
+        }
 
         if ($status = request('status')) {
             $query->byStatus($status);
@@ -405,6 +466,7 @@ class AdminController extends Controller
             'created_by' => $o->createdBy?->name ?? '—',
             'created_at' => $o->created_at->format('M d, H:i'),
             'can_cancel' => in_array($o->status, ['new', 'processing']),
+            'cancel_url' => route('admin.orders.cancel', $o->id),
         ])->values()->toArray();
 
         $paginationHtml = $orders->appends(request()->query())->links()->toHtml();
@@ -426,33 +488,116 @@ class AdminController extends Controller
     // === REPORTS ===
     public function reports()
     {
-        $selectedDate = request('date', today()->toDateString());
-        $dailySales = $this->reportService->dailySales($selectedDate);
+        $from = request('from', today()->toDateString());
+        $to = request('to', today()->toDateString());
 
-        $totalSales = $dailySales['total_sales'] ?? 0;
-        $orderCount = $dailySales['order_count'] ?? 0;
+        // Ensure proper datetime ranges for queries (bare dates match only midnight)
+        $fromDt = $from . ' 00:00:00';
+        $toDt = $to . ' 23:59:59';
+
+        $totalSales = (float) Payment::whereBetween('paid_at', [$fromDt, $toDt])->sum('amount');
+        $orderCount = Order::whereBetween('created_at', [$fromDt, $toDt])->where('status', 'paid')->count();
         $avgOrderValue = $orderCount > 0 ? $totalSales / $orderCount : 0;
 
-        $totalItems = OrderItem::whereHas('order', fn($q) => $q->whereDate('created_at', $selectedDate))
+        $totalItems = OrderItem::whereHas('order', fn($q) => $q->whereBetween('created_at', [$fromDt, $toDt]))
             ->where('status', '!=', 'voided')
             ->sum('qty');
 
-        $paymentMethods = Payment::whereDate('paid_at', $selectedDate)
+        $paymentMethods = Payment::whereBetween('paid_at', [$fromDt, $toDt])
             ->select('type as method', DB::raw('SUM(amount) as total'))
             ->groupBy('type')
             ->get();
 
-        $ordersByStatus = Order::whereDate('created_at', $selectedDate)
+        $ordersByStatus = Order::whereBetween('created_at', [$fromDt, $toDt])
             ->select('status', DB::raw('count(*) as count'))
             ->groupBy('status')
             ->pluck('count', 'status')
             ->toArray();
 
-        $topItems = $this->reportService->topItems($selectedDate, $selectedDate);
+        $topItems = $this->reportService->topItems($fromDt, $toDt);
 
         return view('admin.reports.index', compact(
-            'selectedDate', 'totalSales', 'orderCount', 'avgOrderValue',
+            'from', 'to', 'totalSales', 'orderCount', 'avgOrderValue',
             'totalItems', 'paymentMethods', 'ordersByStatus', 'topItems'
         ));
+    }
+
+    public function reportsCsv()
+    {
+        $from = request('from', today()->toDateString());
+        $to = request('to', today()->toDateString());
+        $fromDt = $from . ' 00:00:00';
+        $toDt = $to . ' 23:59:59';
+
+        $filename = "report_{$from}_to_{$to}.csv";
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ];
+
+        $callback = function () use ($fromDt, $toDt, $from, $to) {
+            $output = fopen('php://output', 'w');
+
+            fputcsv($output, ['Report', $from, 'to', $to]);
+            fputcsv($output, []);
+
+            $totalSales = (float) Payment::whereBetween('paid_at', [$fromDt, $toDt])->sum('amount');
+            $orderCount = Order::whereBetween('created_at', [$fromDt, $toDt])->where('status', 'paid')->count();
+            fputcsv($output, ['Total Sales', number_format($totalSales, 2)]);
+            fputcsv($output, ['Order Count', $orderCount]);
+            fputcsv($output, []);
+
+            fputcsv($output, ['Payment Method', 'Total']);
+            $payments = Payment::whereBetween('paid_at', [$fromDt, $toDt])
+                ->select('type as method', DB::raw('SUM(amount) as total'))
+                ->groupBy('type')
+                ->get();
+            foreach ($payments as $p) {
+                fputcsv($output, [$p->method, number_format((float) $p->total, 2)]);
+            }
+            fputcsv($output, []);
+
+            fputcsv($output, ['Item', 'Qty Sold', 'Revenue']);
+            $topItems = $this->reportService->topItems($fromDt, $toDt);
+            foreach ($topItems as $item) {
+                fputcsv($output, [
+                    $item['menu_item']['name'] ?? 'N/A',
+                    $item['total_qty'] ?? 0,
+                    number_format((float) ($item['total_revenue'] ?? 0), 2),
+                ]);
+            }
+
+            fclose($output);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    public function reportsPdf()
+    {
+        $from = request('from', today()->toDateString());
+        $to = request('to', today()->toDateString());
+        $fromDt = $from . ' 00:00:00';
+        $toDt = $to . ' 23:59:59';
+
+        $totalSales = (float) Payment::whereBetween('paid_at', [$fromDt, $toDt])->sum('amount');
+        $orderCount = Order::whereBetween('created_at', [$fromDt, $toDt])->where('status', 'paid')->count();
+        $avgOrderValue = $orderCount > 0 ? $totalSales / $orderCount : 0;
+
+        $paymentMethods = Payment::whereBetween('paid_at', [$fromDt, $toDt])
+            ->select('type as method', DB::raw('SUM(amount) as total'))
+            ->groupBy('type')
+            ->get();
+
+        $topItems = $this->reportService->topItems($fromDt, $toDt);
+
+        $pdf = Pdf::loadView('admin.reports.report-pdf', compact(
+            'from', 'to', 'totalSales', 'orderCount', 'avgOrderValue',
+            'paymentMethods', 'topItems'
+        ));
+
+        $filename = "report_{$from}_to_{$to}.pdf";
+        return $pdf->download($filename);
     }
 }

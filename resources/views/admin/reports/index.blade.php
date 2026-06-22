@@ -3,11 +3,24 @@
 @section('content')
 <div class="flex justify-between items-center mb-6">
     <h2 class="text-xl font-semibold">Reports</h2>
-    <div class="flex items-center space-x-3">
-        <input type="date" id="report-date" value="{{ $selectedDate }}" class="px-3 py-2 border rounded-lg text-sm">
-        <button onclick="window.location.href='{{ route('admin.reports') }}?date='+document.getElementById('report-date').value" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm hover:bg-indigo-700">Filter</button>
+    <div class="flex items-center gap-2">
+        <a href="{{ route('admin.reports.csv', request()->query()) }}" class="px-4 py-2 border rounded-lg text-sm hover:bg-gray-50">CSV</a>
+        <a href="{{ route('admin.reports.pdf', request()->query()) }}" class="px-4 py-2 border rounded-lg text-sm hover:bg-gray-50">PDF</a>
     </div>
 </div>
+
+{{-- Date Range Form --}}
+<form method="GET" class="flex items-center gap-3 mb-6">
+    <div>
+        <label class="block text-xs text-gray-500 mb-1">From</label>
+        <input type="date" name="from" value="{{ $from }}" class="px-3 py-2 border rounded-lg text-sm">
+    </div>
+    <div>
+        <label class="block text-xs text-gray-500 mb-1">To</label>
+        <input type="date" name="to" value="{{ $to }}" class="px-3 py-2 border rounded-lg text-sm">
+    </div>
+    <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm hover:bg-indigo-700 mt-4">Filter</button>
+</form>
 
 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
     <div class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-green-500">
@@ -53,13 +66,15 @@
     <table class="w-full text-sm">
         <thead><tr class="text-left text-gray-500 border-b"><th class="pb-2">Item</th><th class="pb-2">Qty Sold</th><th class="pb-2">Revenue</th></tr></thead>
         <tbody>
-            @foreach($topItems as $item)
+            @forelse($topItems as $item)
             <tr class="border-b border-gray-100">
                 <td class="py-2 font-medium">{{ $item['menu_item']['name'] ?? 'N/A' }}</td>
                 <td class="py-2">{{ $item['total_qty'] ?? 0 }}</td>
                 <td class="py-2">${{ number_format($item['total_revenue'] ?? 0, 2) }}</td>
             </tr>
-            @endforeach
+            @empty
+            <tr><td colspan="3" class="py-4 text-center text-gray-400">No data</td></tr>
+            @endforelse
         </tbody>
     </table>
 </div>

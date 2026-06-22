@@ -16,11 +16,13 @@ $initialOrders = $orders->map(fn($o) => [
 ])->values()->toArray();
 $initialPagination = $orders->appends(request()->query())->links()->toHtml();
 $currentStatus = request('status', '');
+$currentSearch = request('search', '');
 @endphp
-<div x-data="ordersManager('{{ $currentStatus }}', {{ json_encode($initialOrders) }}, '{{ $initialPagination }}')">
+<div x-data="ordersManager('{{ $currentStatus }}', '{{ $currentSearch }}', {{ json_encode($initialOrders) }}, '{{ $initialPagination }}')">
     <div class="flex justify-between items-center mb-6">
         <h2 class="text-xl font-semibold">Orders</h2>
         <div class="flex space-x-2">
+            <input type="text" x-model="search" placeholder="Search by order no..." class="px-3 py-2 border rounded-lg text-sm w-48" @keyup.enter="applySearch()">
             <select @change="filter($event.target.value)" class="px-3 py-2 border rounded-lg text-sm">
                 <option value="">All Status</option>
                 <option value="new" {{ $currentStatus === 'new' ? 'selected' : '' }}>New</option>
@@ -70,11 +72,12 @@ $currentStatus = request('status', '');
 </div>
 
 <script>
-function ordersManager(status, initialOrders, initialPagination) {
+function ordersManager(status, search, initialOrders, initialPagination) {
     return {
         orders: initialOrders,
         paginationHtml: initialPagination,
         currentStatus: status,
+        search: search,
 
         init() {
             setInterval(() => this.poll(), 10000);
@@ -95,10 +98,17 @@ function ordersManager(status, initialOrders, initialPagination) {
             this.poll();
         },
 
+        applySearch() {
+            this.poll();
+        },
+
         async poll() {
             try {
                 let url = '/admin/orders/data';
-                if (this.currentStatus) url += '?status=' + this.currentStatus;
+                const params = [];
+                if (this.currentStatus) params.push('status=' + this.currentStatus);
+                if (this.search) params.push('search=' + encodeURIComponent(this.search));
+                if (params.length) url += '?' + params.join('&');
                 const res = await fetch(url);
                 const data = await res.json();
                 this.orders = data.orders;

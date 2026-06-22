@@ -6,11 +6,28 @@
     <button @click="$dispatch('open-modal', {mode: 'create'})" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-indigo-700">+ Add User</button>
 </div>
 @if(session('success'))<div class="bg-green-50 text-green-700 px-4 py-3 rounded-lg mb-4 text-sm">{{ session('success') }}</div>@endif
+
+<form method="GET" class="flex items-center gap-3 mb-4">
+    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by name..." class="px-3 py-2 border rounded-lg text-sm w-64">
+    <select name="role" class="px-3 py-2 border rounded-lg text-sm">
+        <option value="">All Roles</option>
+        <option value="admin" {{ request('role') === 'admin' ? 'selected' : '' }}>Admin</option>
+        <option value="manager" {{ request('role') === 'manager' ? 'selected' : '' }}>Manager</option>
+        <option value="cashier" {{ request('role') === 'cashier' ? 'selected' : '' }}>Cashier</option>
+        <option value="waiter" {{ request('role') === 'waiter' ? 'selected' : '' }}>Waiter</option>
+        <option value="kitchen" {{ request('role') === 'kitchen' ? 'selected' : '' }}>Kitchen</option>
+    </select>
+    <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm hover:bg-indigo-700">Filter</button>
+    @if(request('search') || request('role'))
+        <a href="{{ route('admin.users') }}" class="px-4 py-2 border rounded-lg text-sm hover:bg-gray-50">Clear</a>
+    @endif
+</form>
+
 <div class="bg-white rounded-xl shadow-sm overflow-hidden">
     <table class="w-full text-sm">
         <thead class="bg-gray-50"><tr class="text-left text-gray-500"><th class="px-4 py-3">Name</th><th class="px-4 py-3">Email</th><th class="px-4 py-3">Role</th><th class="px-4 py-3">Kitchen</th><th class="px-4 py-3">Active</th><th class="px-4 py-3">Actions</th></tr></thead>
         <tbody>
-            @foreach($users as $u)
+            @forelse($users as $u)
             <tr class="border-t">
                 <td class="px-4 py-3 font-medium">{{ $u->name }}</td>
                 <td class="px-4 py-3">{{ $u->email }}</td>
@@ -23,7 +40,9 @@
                     <form method="POST" action="{{ route('admin.users.delete', $u->id) }}" class="inline" onsubmit="return confirm('Delete this user?')">@csrf @method('DELETE')<button class="text-red-600 hover:text-red-800 text-xs">Delete</button></form>
                 </td>
             </tr>
-            @endforeach
+            @empty
+            <tr><td colspan="6" class="px-4 py-8 text-center text-gray-400">No users found</td></tr>
+            @endforelse
         </tbody>
     </table>
 </div>

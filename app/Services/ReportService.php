@@ -28,7 +28,7 @@ class ReportService
     public function monthlySales(int $year, int $month): array
     {
         $startDate = "{$year}-{$month}-01";
-        $endDate = date('Y-m-t', strtotime($startDate));
+        $endDate = date('Y-m-t', strtotime($startDate)) . ' 23:59:59';
 
         $payments = Payment::whereBetween('paid_at', [$startDate, $endDate])->get();
         $orders = Order::whereBetween('created_at', [$startDate, $endDate])
@@ -48,7 +48,7 @@ class ReportService
     public function yearlySales(int $year): array
     {
         $startDate = "{$year}-01-01";
-        $endDate = "{$year}-12-31";
+        $endDate = "{$year}-12-31 23:59:59";
 
         $payments = Payment::whereBetween('paid_at', [$startDate, $endDate])->get();
         $orders = Order::whereBetween('created_at', [$startDate, $endDate])
