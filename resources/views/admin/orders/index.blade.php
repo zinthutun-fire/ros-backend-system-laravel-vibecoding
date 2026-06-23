@@ -46,7 +46,7 @@ $currentSearch = request('search', '');
                             <span class="px-2 py-0.5 rounded-full text-xs" :class="statusClass(o.status)" x-text="o.status"></span>
                         </td>
                         <td class="px-4 py-3" x-text="o.items_count"></td>
-                        <td class="px-4 py-3">$<span x-text="o.grand_total.toFixed(2)"></span></td>
+                        <td class="px-4 py-3"><span x-text="o.grand_total.toFixed(2)"></span> Ks</td>
                         <td class="px-4 py-3" x-text="o.created_by"></td>
                         <td class="px-4 py-3 text-xs text-gray-500" x-text="o.created_at"></td>
                         <td class="px-4 py-3">

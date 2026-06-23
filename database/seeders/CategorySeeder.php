@@ -9,13 +9,13 @@ class CategorySeeder extends Seeder
 {
     public function run(): void
     {
-        Category::firstOrCreate(['name' => 'Appetizers'], ['description' => 'Starters and appetizers', 'sort_order' => 1, 'is_active' => true]);
-        Category::firstOrCreate(['name' => 'Main Course'], ['description' => 'Main dishes', 'sort_order' => 2, 'is_active' => true]);
-        Category::firstOrCreate(['name' => 'Burgers'], ['description' => 'Burger selection', 'sort_order' => 3, 'is_active' => true]);
-        Category::firstOrCreate(['name' => 'Pizza'], ['description' => 'Wood-fired pizzas', 'sort_order' => 4, 'is_active' => true]);
-        Category::firstOrCreate(['name' => 'Salads'], ['description' => 'Fresh salads', 'sort_order' => 5, 'is_active' => true]);
-        Category::firstOrCreate(['name' => 'Beverages'], ['description' => 'Drinks and beverages', 'sort_order' => 6, 'is_active' => true]);
-        Category::firstOrCreate(['name' => 'Desserts'], ['description' => 'Sweet treats', 'sort_order' => 7, 'is_active' => true]);
-        Category::firstOrCreate(['name' => 'Sides'], ['description' => 'Side dishes', 'sort_order' => 8, 'is_active' => true]);
+        Category::firstOrCreate(['name' => 'ထမင်းများ (Rice Dishes)'], ['description' => 'Rice dishes and fried rice', 'sort_order' => 1, 'is_active' => true]);
+        Category::firstOrCreate(['name' => 'ခေါက်ဆွဲများ (Noodles)'], ['description' => 'Noodle dishes', 'sort_order' => 2, 'is_active' => true]);
+        Category::firstOrCreate(['name' => 'အကြော်များ (Fried Items)'], ['description' => 'Fried food selection', 'sort_order' => 3, 'is_active' => true]);
+        Category::firstOrCreate(['name' => 'အသားများ (Meat Dishes)'], ['description' => 'Meat dishes', 'sort_order' => 4, 'is_active' => true]);
+        Category::firstOrCreate(['name' => 'အသုပ်များ (Salads)'], ['description' => 'Fresh salads', 'sort_order' => 5, 'is_active' => true]);
+        Category::firstOrCreate(['name' => 'ဟင်းချိုများ (Soups)'], ['description' => 'Soup selection', 'sort_order' => 6, 'is_active' => true]);
+        Category::firstOrCreate(['name' => 'အချိုရည်များ (Beverages)'], ['description' => 'Drinks and beverages', 'sort_order' => 7, 'is_active' => true]);
+        Category::firstOrCreate(['name' => 'အချိုပွဲများ (Desserts)'], ['description' => 'Sweet treats', 'sort_order' => 8, 'is_active' => true]);
     }
 }

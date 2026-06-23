@@ -141,7 +141,7 @@ $initialData = json_encode([
                                                 <span class="badge bg-danger">Bill Requested</span>
                                             </div>
                                             <div class="small fw-bold text-dark ms-0">
-                                                Total: $<span x-text="entry.total.toFixed(2)"></span>
+                                                Total: <span x-text="entry.total.toFixed(2)"></span> Ks
                                             </div>
                                         </div>
                                     </template>
@@ -256,7 +256,7 @@ $initialData = json_encode([
                                             'bg-warning text-dark': !['paid','processing','new','cancelled'].includes(order.status)
                                         }" x-text="order.status"></span>
                                 </td>
-                                <td class="text-end fw-semibold">$<span x-text="order.grand_total.toFixed(2)"></span></td>
+                                <td class="text-end fw-semibold"><span x-text="order.grand_total.toFixed(2)"></span> Ks</td>
                                 <td class="text-muted" x-text="order.created_by"></td>
                                 <td class="text-end pe-3">
                                     <a :href="order.url" class="btn btn-sm btn-outline-primary">

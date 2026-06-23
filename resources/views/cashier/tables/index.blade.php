@@ -152,14 +152,14 @@
                                                                 </template>
                                                             </td>
                                                             <td class="text-center fw-medium" x-text="item.qty"></td>
-                                                            <td class="text-end fw-medium">$<span x-text="item.subtotal.toFixed(2)"></span></td>
+                                                            <td class="text-end fw-medium"><span x-text="item.subtotal.toFixed(2)"></span> Ks</td>
                                                         </tr>
                                                     </template>
                                                 </tbody>
                                             </table>
                                             <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top">
                                                 <small class="text-muted fw-medium">Total</small>
-                                                <span class="fw-bold">$<span x-text="order.grand_total.toFixed(2)"></span></span>
+                                                <span class="fw-bold"><span x-text="order.grand_total.toFixed(2)"></span> Ks</span>
                                             </div>
                                             <template x-if="order.merge">
                                                 <div class="mt-2 p-2 bg-purple bg-opacity-10 border border-purple border-opacity-25 rounded small text-purple d-flex align-items-center gap-2">

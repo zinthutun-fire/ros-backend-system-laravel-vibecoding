@@ -8,6 +8,7 @@ use App\Repositories\Contracts\PaymentRepositoryInterface;
 use App\Repositories\Contracts\OrderRepositoryInterface;
 use App\Repositories\Contracts\TableRepositoryInterface;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class PaymentService
 {
@@ -114,7 +115,11 @@ class PaymentService
             $this->tableRepository->updateStatus($tableId, 'paid');
             $table = $this->tableRepository->find($tableId);
             if ($table) {
-                event(new TableStatusChanged($table));
+                try {
+                    event(new TableStatusChanged($table));
+                } catch (\Throwable $e) {
+                    Log::error('Broadcast failed for table ' . $tableId . ': ' . $e->getMessage());
+                }
             }
         }
     }

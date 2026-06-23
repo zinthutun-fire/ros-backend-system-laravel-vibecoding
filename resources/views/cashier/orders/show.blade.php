@@ -141,7 +141,7 @@ $initialData = json_encode([
                                             <span x-text="item.modifiers || '—'"></span>
                                         </td>
                                         <td class="text-center fw-medium" x-text="item.qty"></td>
-                                        <td class="text-end fw-medium">$<span x-text="item.subtotal.toFixed(2)"></span></td>
+                                        <td class="text-end fw-medium"><span x-text="item.subtotal.toFixed(2)"></span> Ks</td>
                                         <td>
                                             <span class="badge badge-status" :class="item.status_class" x-text="item.status"></span>
                                         </td>
@@ -178,7 +178,7 @@ $initialData = json_encode([
                                             <span class="small fw-medium text-capitalize" x-text="p.type"></span>
                                             <small class="text-muted" x-text="'— ' + p.time"></small>
                                         </div>
-                                        <span class="small fw-bold">$<span x-text="p.amount.toFixed(2)"></span></span>
+                                        <span class="small fw-bold"><span x-text="p.amount.toFixed(2)"></span> Ks</span>
                                     </div>
                                 </template>
                             </div>
@@ -196,26 +196,26 @@ $initialData = json_encode([
                     <div class="d-flex flex-column gap-2 small">
                         <div class="d-flex justify-content-between">
                             <span class="text-muted">Subtotal</span>
-                            <span class="fw-semibold">$<span x-text="summary.total.toFixed(2)"></span></span>
+                            <span class="fw-semibold"><span x-text="summary.total.toFixed(2)"></span> Ks</span>
                         </div>
                         <div class="d-flex justify-content-between">
                             <span class="text-muted">Tax</span>
-                            <span class="fw-semibold">$<span x-text="summary.tax_total.toFixed(2)"></span></span>
+                            <span class="fw-semibold"><span x-text="summary.tax_total.toFixed(2)"></span> Ks</span>
                         </div>
                         <div class="d-flex justify-content-between">
                             <span class="text-muted">Service Charge</span>
-                            <span class="fw-semibold">$<span x-text="summary.service_charge_total.toFixed(2)"></span></span>
+                            <span class="fw-semibold"><span x-text="summary.service_charge_total.toFixed(2)"></span> Ks</span>
                         </div>
                         <template x-if="summary.discount_total > 0">
                             <div class="d-flex justify-content-between text-danger bg-danger bg-opacity-10 p-2 rounded">
                                 <span class="fw-medium">Discount</span>
-                                <span class="fw-bold">-$<span x-text="summary.discount_total.toFixed(2)"></span></span>
+                                <span class="fw-bold">-<span x-text="summary.discount_total.toFixed(2)"></span> Ks</span>
                             </div>
                         </template>
                         <hr class="my-1">
                         <div class="d-flex justify-content-between fw-bold fs-6">
                             <span>Total</span>
-                            <span>$<span x-text="summary.grand_total.toFixed(2)"></span></span>
+                            <span><span x-text="summary.grand_total.toFixed(2)"></span> Ks</span>
                         </div>
                     </div>
                     <hr>

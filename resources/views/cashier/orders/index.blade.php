@@ -114,7 +114,7 @@ $initialPagination = $orders->appends(request()->query())->links('pagination::bo
                                     }" x-text="o.status"></span>
                             </td>
                             <td class="text-center fw-medium" x-text="o.items_count"></td>
-                            <td class="text-end fw-semibold">$<span x-text="o.grand_total.toFixed(2)"></span></td>
+                            <td class="text-end fw-semibold"><span x-text="o.grand_total.toFixed(2)"></span> Ks</td>
                             <td class="text-muted small" x-text="o.created_at"></td>
                             <td class="text-muted" x-text="o.created_by"></td>
                             <td class="text-end pe-3">
